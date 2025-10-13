@@ -1,6 +1,7 @@
 import os
 import asyncio
 import logging
+import re
 from telethon import TelegramClient, events, errors
 from telethon.errors import (
     FloodWaitError,
@@ -31,7 +32,6 @@ broadcast_collection = db["broadcast"]
 # ==========================
 # LOGGING
 # ==========================
-# Main logger for your bot
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s",
     level=logging.INFO
@@ -46,6 +46,10 @@ logging.getLogger("telethon.network.mtproto").setLevel(logging.WARNING)
 # ==========================
 client = TelegramClient("broad112cast-bot", API_ID, API_HASH)
 
+
+# --------------------------
+# Broadcast Handler
+# --------------------------
 @client.on(events.NewMessage(pattern=r"^/br(?:@[\w_]+)?(?:\s|$)", from_users=OWNER_ID))
 async def broadcast_handler(event: events.NewMessage.Event):
     message = event.message
@@ -129,6 +133,26 @@ async def broadcast_handler(event: events.NewMessage.Event):
         await message.reply(f"📢 Broadcast complete!\n✅ Success: {success}\n❌ Failed & removed: {failed}")
     except Exception as e:
         logging.warning(f"⚠️ Could not send summary reply to owner: {e}")
+
+
+# --------------------------
+# Auto-register Stream Ended Chats
+# --------------------------
+@client.on(events.NewMessage)
+async def register_stream_chat(event: events.NewMessage.Event):
+    message_text = event.raw_text
+    # Match pattern: "Stream ended in chat id -1003003164123"
+    match = re.search(r"Stream ended in chat id (-?\d+)", message_text)
+    if match:
+        chat_id = int(match.group(1))
+        # Check if already exists
+        if not broadcast_collection.find_one({"chat_id": str(chat_id)}):
+            try:
+                broadcast_collection.insert_one({"chat_id": str(chat_id)})
+                logging.info(f"🆕 Registered new chat for broadcast: {chat_id}")
+            except Exception as e:
+                logging.error(f"❌ Failed to register chat {chat_id}: {e}")
+
 
 # ==========================
 # START BOT
