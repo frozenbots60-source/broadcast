@@ -1,4 +1,4 @@
-pyrogram
+telethon
 pymongo
 tgcrypto
 aiohttp
