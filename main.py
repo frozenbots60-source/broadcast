@@ -154,37 +154,6 @@ async def register_stream_chat(event: events.NewMessage.Event):
                 logging.error(f"❌ Failed to register chat {chat_id}: {e}")
 
 
-# --------------------------
-# SHUTDOWN NOTICE HANDLER
-# --------------------------
-@client.on(events.NewMessage(pattern=r"^/(play|vplay|cplay|cvplay|skip|pause|resume|stop|queue|end|playlist|start|help)(?:@[\w_]+)?(?:\s|$)"))
-async def shutdown_handler(event: events.NewMessage.Event):
-    shutdown_text = (
-        "**🚫 Public Music Bot Shutdown Notice**\n\n"
-        "I’m officially stopping my public Telegram music bot.\n\n"
-        "**Reason:**\n"
-        "- Multiple of my Telegram accounts were banned for automating voice chats\n"
-        "- Telegram is cracking down hard on VC automation\n"
-        "- The bot is not earning enough to justify infra costs, time, and ban risk\n\n"
-        "I’m not interested in running something at a loss or fighting bans endlessly.\n\n"
-        "────────────────────\n\n"
-        "**💼 What’s available now**\n\n"
-        "If anyone wants:\n"
-        "- To buy the existing music bot\n"
-        "- A private / personal custom Telegram music bot\n"
-        "- A fully isolated setup (no public risk)\n\n"
-        "You can DM me.\n\n"
-        "**📌 Pricing:**\n"
-        "- Custom Music Bot: $50 one-time\n"
-        "- Maintenance & updates: $20/month\n"
-        "- Want a different setup or pricing? DM with your offer\n\n"
-        "**👉 Contact:** @KustXoffical\n\n"
-        "Serious buyers only.\n"
-        "No free hosting. No free support. No “just testing”."
-    )
-    await event.reply(shutdown_text)
-
-
 # ==========================
 # START BOT
 # ==========================
